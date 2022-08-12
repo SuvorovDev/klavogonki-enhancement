@@ -102,7 +102,7 @@ function injectTypingBlock() {
 function focusError() {
   const focusError = document.createElement("div");
   focusError.id = "focusError";
-  focusError.innerHTML = "<b>Кликните сюда, что бы вернуть фокус!</b>";
+  focusError.innerHTML = "<b>Кликните, что бы вернуть фокус!</b>";
 
   const words = document.getElementById("words");
   const caret = document.getElementById("caret");
