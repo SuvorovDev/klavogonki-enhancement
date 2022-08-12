@@ -1,0 +1,395 @@
+// ==UserScript==
+// @name         klavogonki-enhancement
+// @namespace    http://tampermonkey.net/
+// @version      0.1
+// @description  try to take over the world!
+// @author       You
+// @match        http://klavogonki.ru/g/*
+// @icon         https://www.google.com/s2/favicons?sz=64&domain=klavogonki.ru
+// @grant        none
+// ==/UserScript==
+
+(function () {
+  const style = document.createElement("style");
+  style.innerHTML = `
+  :root {
+    --main-text-color: #cccccc;
+    --second-text-color: #676c71;
+    --incorrect-text-color: #ee9090;
+    --incorrect-overwrite-text-color: #dd6b6b;
+    --caret-color: #90ee90;
+  }
+  #fixtypo {
+	display: none!important;
+}
+  
+  #typeblock #inputtext {
+    z-index: 0;
+    border: none !important;
+    position: absolute;
+    opacity: 0;
+    caret-color: transparent;
+  
+    top: -70px;
+  }
+  
+  #fontsize_cont {
+    display: none;
+  }
+  
+  #typingBlock {
+    position: relative;
+    z-index: 20;
+  }
+  
+  #words {
+    transition: filter 0.2s ease-in-out;
+  }
+  
+  .word {
+    display: inline-block;
+    font-family: "Roboto Mono", "Tahoma";
+    margin: 0 5px;
+    font-size: 25px;
+    user-select: none;
+    cursor: default;
+    color: var(--second-text-color);
+  }
+  
+  #focusError {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s, opacity 0.3s ease-in-out;
+  }
+  
+  #focusError > b {
+    font-size: 24px;
+    user-select: none;
+    cursor: default;
+  }
+  
+  .letter.correct {
+    color: var(--main-text-color);
+  }
+  
+  .letter.incorrect {
+    color: var(--incorrect-text-color);
+  }
+  
+  .letter.incorrectOverwrite {
+    color: var(--incorrect-overwrite-text-color);
+  }
+  
+  @keyframes blink {
+    0% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  
+  #caret {
+    background: var(--caret-color);
+    width: 3px;
+    border-radius: 0.5rem !important;
+    height: 25px;
+    position: fixed;
+    animation: blink 0.5s infinite ease-in-out;
+    transition: left 0.1s ease-in-out;
+  }
+  
+  `;
+  document.head.appendChild(style);
+
+  var link = document.createElement("link");
+  link.setAttribute("rel", "stylesheet");
+  link.setAttribute("type", "text/css");
+  link.setAttribute(
+    "href",
+    "https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500;600&display=swap"
+  );
+  document.head.appendChild(link);
+
+  var myElement = document.getElementById("typetext");
+  if (window.addEventListener) {
+    // Normal browsers
+    myElement.addEventListener("DOMSubtreeModified", contentChanged, false);
+  }
+
+  function contentChanged() {
+    go();
+    myElement.removeEventListener("DOMSubtreeModified", contentChanged, false);
+  }
+
+  function go() {
+    const defaultInput = document.getElementById("inputtext");
+    defaultInput.setAttribute("maxlength", 30);
+    defaultInput.focus();
+
+    function getText() {
+      const fieldOne = document.getElementById("beforefocus")?.innerText;
+      const fieldTwo = document.getElementById("typefocus")?.innerText;
+      const fieldThree = document.getElementById("afterfocus")?.innerText;
+      const result = fieldOne + fieldTwo + fieldThree;
+      return replaceSymbols(result.replace(/\s{2,}/gm, " "));
+    }
+
+    function replaceSymbols(str) {
+      let result = str;
+      const book =
+        document.querySelector("#gamedesc > span > a")?.innerText || "";
+      if (!book.match(/.*English.*/)) {
+        result = result.replaceAll("o", "о");
+        result = result.replaceAll("c", "с");
+        result = result.replaceAll("ё", "е");
+        result = result.replaceAll("Ё", "Е");
+      }
+      result = result.replaceAll("–", "-");
+      result = result.replaceAll("—", "-");
+      result = result.replaceAll("«", `"`);
+      result = result.replaceAll("»", `"`);
+      return result;
+    }
+
+    function formatWord(word) {
+      // return `<div class="word"><span class="letter">${word
+      //   .split("")
+      //   .join('</span><span class="letter">')}</div>`;
+      const letters = word.split("");
+      const letterNodes = letters.map((letter) => {
+        return `<span class="letter" data-letter='${
+          letter === "'" ? "&#x27;" : letter
+        }'>${letter}</span>`;
+      });
+
+      return `<div class="word">${letterNodes.join("")}</div>`;
+    }
+
+    function generateTextNodes() {
+      const words = getText().split(" ");
+      const wordsBlock = document.createElement("div");
+      wordsBlock.id = "words";
+
+      words.forEach((word) => {
+        wordsBlock.innerHTML += formatWord(word);
+      });
+      return wordsBlock;
+    }
+
+    function injectTypingBlock() {
+      const typingBlock = document.createElement("div");
+      typingBlock.id = "typingBlock";
+      typingBlock.appendChild(generateTextNodes());
+
+      const originalBlock = document.getElementById("typeplayblock");
+      originalBlock.appendChild(typingBlock);
+
+      makeCaret();
+
+      typingBlock.appendChild(focusError());
+      typingBlock.addEventListener("click", (e) => {
+        defaultInput.focus();
+      });
+    }
+
+    function focusError() {
+      const focusError = document.createElement("div");
+      focusError.id = "focusError";
+      focusError.innerHTML = "<b>Кликните сюда, что бы вернуть фокус!</b>";
+
+      const words = document.getElementById("words");
+      const caret = document.getElementById("caret");
+      defaultInput.addEventListener("focus", (e) => {
+        focusError.style.visibility = "hidden";
+        focusError.style.opacity = "0";
+        caret.style.display = "block";
+        words.style.filter = "blur(0)";
+        console.log("focus");
+      });
+      defaultInput.addEventListener("blur", (e) => {
+        focusError.style.visibility = "visible";
+        focusError.style.opacity = "1";
+        caret.style.display = "none";
+        words.style.filter = "blur(5px)";
+        console.log("blur");
+      });
+
+      return focusError;
+    }
+
+    function makeCaret() {
+      const caret = document.createElement("div");
+      caret.id = "caret";
+      document.getElementById("typingBlock").appendChild(caret);
+    }
+
+    function startGame() {
+      injectTypingBlock();
+
+      document.querySelector(".word").classList.add("current");
+      document.querySelector(".letter").classList.add("current");
+
+      caretMoving();
+    }
+
+    startGame();
+
+    defaultInput.addEventListener("keydown", (e) => {
+      const key = e.key;
+      const currentWord = document.querySelector(".word.current");
+
+      const isDone = currentWord.classList.contains("done");
+      const isDoneWrong = currentWord.classList.contains("doneWrong");
+      const isLetter = key.length === 1;
+      const isSpace = key === " ";
+      const isBackspace = key === "Backspace";
+
+      if (!isDone && !isDoneWrong) {
+        const currentLetter = document.querySelector(".letter.current");
+        const expectedLetter = currentLetter.dataset.letter;
+        console.log({ key, expectedLetter });
+
+        if (isLetter) {
+          if (key === expectedLetter) {
+            currentLetter.classList.add("correct");
+          } else {
+            currentLetter.classList.add("incorrect");
+            if (!isSpace) {
+              currentLetter.innerText = key;
+            } else {
+              currentLetter.innerText = "_";
+            }
+          }
+
+          currentLetter.classList.remove("current");
+          if (currentLetter.nextSibling) {
+            currentLetter.nextSibling.classList.add("current");
+          } else {
+            const isCorrect =
+              currentWord.children.length ===
+              currentWord.querySelectorAll(".correct").length;
+            if (isCorrect) {
+              currentWord.classList.add("done");
+            } else {
+              currentWord.classList.add("doneWrong");
+            }
+          }
+        }
+
+        if (isBackspace) {
+          const isFirst = currentWord.firstChild === currentLetter;
+          if (!isFirst) {
+            currentLetter.classList.remove("current");
+            const previousLetter = currentLetter.previousSibling;
+            previousLetter.classList.add("current");
+            previousLetter.classList.remove("correct", "incorrect");
+            previousLetter.innerText = previousLetter.dataset.letter;
+          }
+        }
+      }
+
+      if (isDone && isSpace) {
+        const isOverwrited = currentWord.querySelector(".incorrectOverwrite");
+        if (!isOverwrited) {
+          currentWord.classList.remove("current");
+          const nextWord = currentWord.nextSibling;
+          nextWord.classList.add("current");
+          nextWord.firstChild.classList.add("current");
+        } else {
+          const appendLetter = document.createElement("span");
+          appendLetter.classList.add("letter", "incorrectOverwrite");
+          appendLetter.dataset.letter = "_";
+          appendLetter.innerText = "_";
+          currentWord.appendChild(appendLetter);
+        }
+      }
+
+      if (isDoneWrong || (isDone && !isSpace)) {
+        if (isLetter && currentWord.children.length <= 30) {
+          const appendLetter = document.createElement("span");
+          appendLetter.classList.add("letter", "incorrectOverwrite");
+          appendLetter.dataset.letter = key;
+          if (!isSpace) {
+            appendLetter.innerText = key;
+          } else {
+            appendLetter.innerText = "_";
+          }
+          currentWord.appendChild(appendLetter);
+        }
+
+        if (isBackspace) {
+          const lastLetter = currentWord.lastChild;
+          if (lastLetter.classList.contains("incorrectOverwrite")) {
+            lastLetter.remove();
+          } else {
+            currentWord.classList.remove("done", "doneWrong");
+            lastLetter.classList.add("current");
+            lastLetter.classList.remove("correct", "incorrect");
+            lastLetter.innerText = lastLetter.dataset.letter;
+          }
+        }
+      }
+
+      caretMoving();
+    });
+
+    function caretMoving() {
+      const nextLetter = document.querySelector(".letter.current");
+      const nextWord = document.querySelector(".word.current");
+      const caret = document.getElementById("caret");
+      caret.style.top =
+        (nextLetter || nextWord).getBoundingClientRect().top + 5 + "px";
+      if (nextLetter) {
+        if (nextLetter.classList.contains("incorrectOverwrite")) {
+          caret.style.left =
+            nextLetter.getBoundingClientRect().right - 1 + "px";
+        } else {
+          caret.style.left = nextLetter.getBoundingClientRect().left - 1 + "px";
+        }
+      } else {
+        caret.style.left = nextWord.getBoundingClientRect().right - 1 + "px";
+      }
+    }
+
+    defaultInput.addEventListener("keyup", (e) => {
+      const isInputEmpty = defaultInput.value === "";
+      if (isInputEmpty) {
+        const key = e.key;
+        const currentWord = document.querySelector(".word.current");
+
+        const isBackspace = key === "Backspace";
+
+        if (isBackspace) {
+          const overwriteLetters = document.querySelectorAll(
+            ".word .incorrectOverwrite"
+          );
+          overwriteLetters.forEach((e) => {
+            e.remove();
+          });
+
+          const lettersArray = currentWord.childNodes;
+          lettersArray.forEach((e) => {
+            e.className = "";
+            e.classList.add("letter");
+            e.innerText = e.dataset.letter;
+          });
+          lettersArray[0].classList.add("current");
+          caretMoving();
+        }
+        currentWord.classList.remove("done", "doneWrong");
+      }
+    });
+  }
+})();
