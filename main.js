@@ -1,20 +1,3 @@
-var link = document.createElement("link");
-link.setAttribute("rel", "stylesheet");
-link.setAttribute("type", "text/css");
-link.setAttribute(
-  "href",
-  "https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500;600&display=swap"
-);
-document.head.appendChild(link);
-
-const defaultInput = document.getElementById("inputtext");
-defaultInput.setAttribute("maxlength", 30);
-defaultInput.focus();
-
-document.getElementById("param_keyboard").addEventListener("click", (e) => {
-  defaultInput.focus();
-});
-
 function setAndRemoveSettings() {
   const typemod = document.getElementById("param_typemode");
   const highlight = document.getElementById("param_highlight");
@@ -32,6 +15,30 @@ function setAndRemoveSettings() {
   typemod.parentNode.remove();
   highlight.parentNode.remove();
 }
+setAndRemoveSettings();
+
+var link = document.createElement("link");
+link.setAttribute("rel", "stylesheet");
+link.setAttribute("type", "text/css");
+link.setAttribute(
+  "href",
+  "https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500;600&display=swap"
+);
+document.head.appendChild(link);
+
+// ====== When text ready ======
+
+const defaultInput = document.getElementById("inputtext");
+defaultInput.setAttribute("maxlength", 30);
+defaultInput.focus();
+
+document.getElementById("param_keyboard").addEventListener("click", (e) => {
+  defaultInput.focus();
+});
+
+startGame();
+
+// ====== functions ======
 
 function getText() {
   const fieldOne = document.getElementById("beforefocus")?.innerText;
@@ -130,136 +137,6 @@ function makeCaret() {
   document.getElementById("typingBlock").appendChild(caret);
 }
 
-function startGame() {
-  injectTypingBlock();
-
-  document.querySelector(".word").classList.add("current");
-  document.querySelector(".letter").classList.add("current");
-
-  caretMoving();
-}
-
-startGame();
-
-defaultInput.addEventListener("keydown", (e) => {
-  const key = e.key;
-  const currentWord = document.querySelector(".word.current");
-
-  const isDone = currentWord.classList.contains("done");
-  const isDoneWrong = currentWord.classList.contains("doneWrong");
-  const isLetter = key.length === 1;
-  const isSpace = key === " ";
-  const isBackspace = key === "Backspace";
-
-  if (!isDone && !isDoneWrong) {
-    const currentLetter = document.querySelector(".letter.current");
-    const expectedLetter = currentLetter.dataset.letter;
-    console.log({ key, expectedLetter });
-
-    if (isLetter) {
-      if (key === expectedLetter) {
-        currentLetter.classList.add("correct");
-      } else {
-        currentLetter.classList.add("incorrect");
-        if (!isSpace) {
-          currentLetter.innerText = key;
-        } else {
-          currentLetter.innerText = "_";
-        }
-      }
-
-      currentLetter.classList.remove("current");
-      if (currentLetter.nextSibling) {
-        currentLetter.nextSibling.classList.add("current");
-      } else {
-        const isCorrect =
-          currentWord.children.length ===
-          currentWord.querySelectorAll(".correct").length;
-        if (isCorrect) {
-          currentWord.classList.add("done");
-        } else {
-          currentWord.classList.add("doneWrong");
-        }
-      }
-    }
-
-    if (isBackspace) {
-      const isFirst = currentWord.firstChild === currentLetter;
-      if (!isFirst) {
-        currentLetter.classList.remove("current");
-        const previousLetter = currentLetter.previousSibling;
-        previousLetter.classList.add("current");
-        previousLetter.classList.remove("correct", "incorrect");
-        previousLetter.innerText = previousLetter.dataset.letter;
-      }
-    }
-  }
-
-  if (isDone && isSpace) {
-    const isOverwrited = currentWord.querySelector(".incorrectOverwrite");
-    if (!isOverwrited) {
-      currentWord.classList.remove("current");
-      const nextWord = currentWord.nextSibling;
-      nextWord.classList.add("current");
-      nextWord.firstChild.classList.add("current");
-    } else {
-      const appendLetter = document.createElement("span");
-      appendLetter.classList.add("letter", "incorrectOverwrite");
-      appendLetter.dataset.letter = "_";
-      appendLetter.innerText = "_";
-      currentWord.appendChild(appendLetter);
-    }
-  }
-
-  if (isDoneWrong || (isDone && !isSpace)) {
-    if (isLetter && currentWord.children.length < 30) {
-      const appendLetter = document.createElement("span");
-      appendLetter.classList.add("letter", "incorrectOverwrite");
-      appendLetter.dataset.letter = key;
-      if (!isSpace) {
-        appendLetter.innerText = key;
-      } else {
-        appendLetter.innerText = "_";
-      }
-      currentWord.appendChild(appendLetter);
-    }
-
-    if (isBackspace) {
-      const lastLetter = currentWord.lastChild;
-      if (lastLetter.classList.contains("incorrectOverwrite")) {
-        lastLetter.remove();
-      } else {
-        currentWord.classList.remove("done", "doneWrong");
-        lastLetter.classList.add("current");
-        lastLetter.classList.remove("correct", "incorrect");
-        lastLetter.innerText = lastLetter.dataset.letter;
-      }
-    }
-  }
-
-  if (isBackspace && e.ctrlKey) {
-    const overwriteLetters = document.querySelectorAll(
-      ".word .incorrectOverwrite"
-    );
-    overwriteLetters.forEach((e) => {
-      e.remove();
-    });
-
-    const lettersArray = currentWord.childNodes;
-    lettersArray.forEach((e) => {
-      e.className = "";
-      e.classList.add("letter");
-      e.innerText = e.dataset.letter;
-    });
-    lettersArray[0].classList.add("current");
-
-    currentWord.classList.remove("done", "doneWrong");
-    caretMoving();
-  }
-
-  caretMoving();
-});
-
 function caretMoving() {
   const nextLetter = document.querySelector(".letter.current");
   const nextWord = document.querySelector(".word.current");
@@ -275,4 +152,135 @@ function caretMoving() {
   } else {
     caret.style.left = nextWord.getBoundingClientRect().right - 1 + "px";
   }
+}
+
+function keyPressListener() {
+  defaultInput.addEventListener("keydown", (e) => {
+    const key = e.key;
+    const currentWord = document.querySelector(".word.current");
+
+    const isDone = currentWord.classList.contains("done");
+    const isDoneWrong = currentWord.classList.contains("doneWrong");
+    const isLetter = key.length === 1;
+    const isSpace = key === " ";
+    const isBackspace = key === "Backspace";
+
+    if (!isDone && !isDoneWrong) {
+      const currentLetter = document.querySelector(".letter.current");
+      const expectedLetter = currentLetter.dataset.letter;
+      console.log({ key, expectedLetter });
+
+      if (isLetter) {
+        if (key === expectedLetter) {
+          currentLetter.classList.add("correct");
+        } else {
+          currentLetter.classList.add("incorrect");
+          if (!isSpace) {
+            currentLetter.innerText = key;
+          } else {
+            currentLetter.innerText = "_";
+          }
+        }
+
+        currentLetter.classList.remove("current");
+        if (currentLetter.nextSibling) {
+          currentLetter.nextSibling.classList.add("current");
+        } else {
+          const isCorrect =
+            currentWord.children.length ===
+            currentWord.querySelectorAll(".correct").length;
+          if (isCorrect) {
+            currentWord.classList.add("done");
+          } else {
+            currentWord.classList.add("doneWrong");
+          }
+        }
+      }
+
+      if (isBackspace) {
+        const isFirst = currentWord.firstChild === currentLetter;
+        if (!isFirst) {
+          currentLetter.classList.remove("current");
+          const previousLetter = currentLetter.previousSibling;
+          previousLetter.classList.add("current");
+          previousLetter.classList.remove("correct", "incorrect");
+          previousLetter.innerText = previousLetter.dataset.letter;
+        }
+      }
+    }
+
+    if (isDone && isSpace) {
+      const isOverwrited = currentWord.querySelector(".incorrectOverwrite");
+      if (!isOverwrited) {
+        currentWord.classList.remove("current");
+        const nextWord = currentWord.nextSibling;
+        nextWord.classList.add("current");
+        nextWord.firstChild.classList.add("current");
+      } else {
+        const appendLetter = document.createElement("span");
+        appendLetter.classList.add("letter", "incorrectOverwrite");
+        appendLetter.dataset.letter = "_";
+        appendLetter.innerText = "_";
+        currentWord.appendChild(appendLetter);
+      }
+    }
+
+    if (isDoneWrong || (isDone && !isSpace)) {
+      if (isLetter && currentWord.children.length < 30) {
+        const appendLetter = document.createElement("span");
+        appendLetter.classList.add("letter", "incorrectOverwrite");
+        appendLetter.dataset.letter = key;
+        if (!isSpace) {
+          appendLetter.innerText = key;
+        } else {
+          appendLetter.innerText = "_";
+        }
+        currentWord.appendChild(appendLetter);
+      }
+
+      if (isBackspace) {
+        const lastLetter = currentWord.lastChild;
+        if (lastLetter.classList.contains("incorrectOverwrite")) {
+          lastLetter.remove();
+        } else {
+          currentWord.classList.remove("done", "doneWrong");
+          lastLetter.classList.add("current");
+          lastLetter.classList.remove("correct", "incorrect");
+          lastLetter.innerText = lastLetter.dataset.letter;
+        }
+      }
+    }
+
+    if (isBackspace && e.ctrlKey) {
+      const overwriteLetters = document.querySelectorAll(
+        ".word .incorrectOverwrite"
+      );
+      overwriteLetters.forEach((e) => {
+        e.remove();
+      });
+
+      const lettersArray = currentWord.childNodes;
+      lettersArray.forEach((e) => {
+        e.className = "";
+        e.classList.add("letter");
+        e.innerText = e.dataset.letter;
+      });
+      lettersArray[0].classList.add("current");
+
+      currentWord.classList.remove("done", "doneWrong");
+      caretMoving();
+    }
+
+    caretMoving();
+  });
+}
+
+function startGame() {
+  injectTypingBlock();
+
+  document.querySelector(".word").classList.add("current");
+  document.querySelector(".letter").classList.add("current");
+
+  caretMoving();
+  keyPressListener();
 }
