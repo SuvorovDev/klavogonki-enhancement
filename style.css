@@ -2,25 +2,26 @@
   --main-text-color: #cccccc;
   --second-text-color: #676c71;
   --incorrect-text-color: #ee9090;
-  --incorrect-overwrite-text-color: #cc5e5e;
+  --incorrect-overwrite-text-color: #dd6b6b;
   --caret-color: #90ee90;
 }
 
 #fixtypo {
   display: none !important;
 }
+
 #typeblock #inputtext {
   z-index: 0;
   border: none !important;
   position: absolute;
-  opacity: 0.2;
+  opacity: 0;
   caret-color: transparent;
 
   top: -70px;
 }
 
-#fontsize_cont {
-  display: none;
+#typetext {
+  display: none !important;
 }
 
 #typingBlock {
