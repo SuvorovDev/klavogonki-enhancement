@@ -7,8 +7,9 @@
 
 // @namespace    http://tampermonkey.net/
 // @match        http://klavogonki.ru/g/*
+// @icon         https://raw.githubusercontent.com/MishaaDev/klavogonki-enhancement/master/script_icon.png
 
-// @updateURL  https://github.com/MishaaDev/klavogonki-enhancement/raw/master/klavogonki-enhancement.user.js
+// @updateURL    https://github.com/MishaaDev/klavogonki-enhancement/raw/master/klavogonki-enhancement.user.js
 // @downloadURL  https://github.com/MishaaDev/klavogonki-enhancement/raw/master/klavogonki-enhancement.user.js
 // @grant        GM_addStyle
 // ==/UserScript==
@@ -379,7 +380,7 @@ function whenTextReady() {
         } else {
           const appendLetter = document.createElement("span");
           appendLetter.classList.add("letter", "incorrectOverwrite");
-          currentLetter.innerText = key;
+          appendLetter.innerText = key;
           currentWord.appendChild(appendLetter);
         }
       }
@@ -417,7 +418,6 @@ function whenTextReady() {
         const lettersArray = currentWord.childNodes;
         lettersArray.forEach((e) => {
           e.className = "letter";
-          e.classList.add("letter");
           e.innerText = e.dataset.letter;
         });
         lettersArray[0].classList.add("current");

@@ -203,6 +203,10 @@ function keyPressListener() {
     const isSpace = key === " ";
     const isBackspace = key === "Backspace";
 
+    if (isSpace) {
+      key = "_";
+    }
+
     if (!isDone && !isDoneWrong) {
       const currentLetter = document.querySelector(".letter.current");
       const expectedLetter = currentLetter.dataset.letter;
@@ -213,11 +217,7 @@ function keyPressListener() {
           currentLetter.classList.add("correct");
         } else {
           currentLetter.classList.add("incorrect");
-          if (!isSpace) {
-            currentLetter.innerText = key;
-          } else {
-            currentLetter.innerText = "_";
-          }
+          currentLetter.innerText = key;
         }
 
         currentLetter.classList.remove("current");
@@ -257,8 +257,8 @@ function keyPressListener() {
       } else {
         const appendLetter = document.createElement("span");
         appendLetter.classList.add("letter", "incorrectOverwrite");
-        appendLetter.dataset.letter = "_";
-        appendLetter.innerText = "_";
+        appendLetter.dataset.letter = key;
+        appendLetter.innerText = key;
         currentWord.appendChild(appendLetter);
       }
     }
@@ -268,11 +268,7 @@ function keyPressListener() {
         const appendLetter = document.createElement("span");
         appendLetter.classList.add("letter", "incorrectOverwrite");
         appendLetter.dataset.letter = key;
-        if (!isSpace) {
-          appendLetter.innerText = key;
-        } else {
-          appendLetter.innerText = "_";
-        }
+        appendLetter.innerText = key;
         currentWord.appendChild(appendLetter);
       }
 
@@ -300,7 +296,6 @@ function keyPressListener() {
       const lettersArray = currentWord.childNodes;
       lettersArray.forEach((e) => {
         e.className = "letter";
-        e.classList.add("letter");
         e.innerText = e.dataset.letter;
       });
       lettersArray[0].classList.add("current");
