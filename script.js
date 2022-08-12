@@ -215,6 +215,26 @@ defaultInput.addEventListener("keydown", (e) => {
     }
   }
 
+  if (isBackspace && e.ctrlKey) {
+    const overwriteLetters = document.querySelectorAll(
+      ".word .incorrectOverwrite"
+    );
+    overwriteLetters.forEach((e) => {
+      e.remove();
+    });
+
+    const lettersArray = currentWord.childNodes;
+    lettersArray.forEach((e) => {
+      e.className = "";
+      e.classList.add("letter");
+      e.innerText = e.dataset.letter;
+    });
+    lettersArray[0].classList.add("current");
+
+    currentWord.classList.remove("done", "doneWrong");
+    caretMoving();
+  }
+
   caretMoving();
 });
 
@@ -234,32 +254,3 @@ function caretMoving() {
     caret.style.left = nextWord.getBoundingClientRect().right - 1 + "px";
   }
 }
-
-defaultInput.addEventListener("keyup", (e) => {
-  const isInputEmpty = defaultInput.value === "";
-  if (isInputEmpty) {
-    const key = e.key;
-    const currentWord = document.querySelector(".word.current");
-
-    const isBackspace = key === "Backspace";
-
-    if (isBackspace) {
-      const overwriteLetters = document.querySelectorAll(
-        ".word .incorrectOverwrite"
-      );
-      overwriteLetters.forEach((e) => {
-        e.remove();
-      });
-
-      const lettersArray = currentWord.childNodes;
-      lettersArray.forEach((e) => {
-        e.className = "";
-        e.classList.add("letter");
-        e.innerText = e.dataset.letter;
-      });
-      lettersArray[0].classList.add("current");
-      caretMoving();
-    }
-    currentWord.classList.remove("done", "doneWrong");
-  }
-});

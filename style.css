@@ -14,9 +14,9 @@
   z-index: 0;
   border: none !important;
   position: absolute;
-  opacity: 0;
   caret-color: transparent;
 
+  opacity: 0;
   top: -70px;
 }
 
