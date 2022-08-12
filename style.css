@@ -1,11 +1,3 @@
-:root {
-  --main-text-color: #cccccc;
-  --second-text-color: #676c71;
-  --incorrect-text-color: #f95454;
-  --incorrect-overwrite-text-color: #911d1d;
-  --caret-color: #90ee90;
-}
-
 #fixtypo {
   display: none !important;
 }
