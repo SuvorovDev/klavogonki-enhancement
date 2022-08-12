@@ -18,6 +18,41 @@ function setAndRemoveSettings() {
   const inputsize = document.getElementById("param_inputsize");
   inputsize.closest("tr").remove();
 }
+
+function setStyle(stylesArray) {
+  const root = document.documentElement;
+  stylesArray.forEach((e) => {
+    root.style.setProperty(e.name, e.value);
+  });
+}
+
+function checkStyle() {
+  const isDark = getComputedStyle(document.documentElement).getPropertyValue(
+    "--darkgray"
+  );
+  if (isDark) {
+    setStyle(styleDark);
+  } else {
+    setStyle(styleDefault);
+  }
+}
+
+const styleDark = [
+  { name: "--main-text-color", value: "#cccccc" },
+  { name: "--second-text-color", value: "#676c71" },
+  { name: "--incorrect-text-color", value: "#f95454" },
+  { name: "--incorrect-overwrite-text-color", value: "#911d1d" },
+  { name: "--caret-color", value: "#90ee90" },
+];
+
+const styleDefault = [
+  { name: "--main-text-color", value: "#222222" },
+  { name: "--second-text-color", value: "#a7a7a7" },
+  { name: "--incorrect-text-color", value: "#f00" },
+  { name: "--incorrect-overwrite-text-color", value: "#b52f2f" },
+  { name: "--caret-color", value: "#3333AA" },
+];
+
 setAndRemoveSettings();
 
 var link = document.createElement("link");
@@ -279,6 +314,7 @@ function keyPressListener() {
 }
 
 function startGame() {
+  checkStyle();
   injectTypingBlock();
 
   document.querySelector(".word").classList.add("current");
