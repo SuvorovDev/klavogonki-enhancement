@@ -1,8 +1,8 @@
 :root {
   --main-text-color: #cccccc;
   --second-text-color: #676c71;
-  --incorrect-text-color: #ee9090;
-  --incorrect-overwrite-text-color: #dd6b6b;
+  --incorrect-text-color: #f95454;
+  --incorrect-overwrite-text-color: #911d1d;
   --caret-color: #90ee90;
 }
 

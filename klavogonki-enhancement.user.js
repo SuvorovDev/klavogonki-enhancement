@@ -1,11 +1,15 @@
 // ==UserScript==
 // @name         klavogonki-enhancement
-// @namespace    http://tampermonkey.net/
 // @version      0.0.3
-// @description  try to take over the world!
 // @author       MishaaDev
+// @description  Replace defaul typinig box
+// @supportURL   https://github.com/MishaaDev/klavogonki-enhancement
+
+// @namespace    http://tampermonkey.net/
 // @match        http://klavogonki.ru/g/*
-// @icon         https://raw.githubusercontent.com/MishaaDev/klavogonki-enhancement/master/script_icon.png
+
+// @updateURL  https://github.com/MishaaDev/klavogonki-enhancement/raw/master/klavogonki-enhancement.user.js
+// @downloadURL  https://github.com/MishaaDev/klavogonki-enhancement/raw/master/klavogonki-enhancement.user.js
 // @grant        GM_addStyle
 // ==/UserScript==
 
@@ -25,6 +29,9 @@ function setAndRemoveSettings() {
   }
   typemod.parentNode.remove();
   highlight.parentNode.remove();
+
+  const inputsize = document.getElementById("param_inputsize");
+  inputsize.closest("tr").remove();
 }
 
 (function () {
@@ -33,8 +40,8 @@ function setAndRemoveSettings() {
   GM_addStyle(`:root {
     --main-text-color: #cccccc;
     --second-text-color: #676c71;
-    --incorrect-text-color: #ee9090;
-    --incorrect-overwrite-text-color: #dd6b6b;
+    --incorrect-text-color: #f95454;
+    --incorrect-overwrite-text-color: #911d1d;
     --caret-color: #90ee90;
     }
 
@@ -281,7 +288,7 @@ function whenTextReady() {
 
   function keyPressListener() {
     defaultInput.addEventListener("keydown", (e) => {
-      const key = e.key;
+      let key = e.key;
       const currentWord = document.querySelector(".word.current");
 
       const isDone = currentWord.classList.contains("done");
@@ -289,6 +296,10 @@ function whenTextReady() {
       const isLetter = key.length === 1;
       const isSpace = key === " ";
       const isBackspace = key === "Backspace";
+
+      if (isSpace) {
+        key = "_";
+      }
 
       if (!isDone && !isDoneWrong) {
         const currentLetter = document.querySelector(".letter.current");
@@ -300,11 +311,7 @@ function whenTextReady() {
             currentLetter.classList.add("correct");
           } else {
             currentLetter.classList.add("incorrect");
-            if (!isSpace) {
-              currentLetter.innerText = key;
-            } else {
-              currentLetter.innerText = "_";
-            }
+            currentLetter.innerText = key;
           }
 
           currentLetter.classList.remove("current");
@@ -344,8 +351,7 @@ function whenTextReady() {
         } else {
           const appendLetter = document.createElement("span");
           appendLetter.classList.add("letter", "incorrectOverwrite");
-          appendLetter.dataset.letter = "_";
-          appendLetter.innerText = "_";
+          currentLetter.innerText = key;
           currentWord.appendChild(appendLetter);
         }
       }
@@ -355,11 +361,7 @@ function whenTextReady() {
           const appendLetter = document.createElement("span");
           appendLetter.classList.add("letter", "incorrectOverwrite");
           appendLetter.dataset.letter = key;
-          if (!isSpace) {
-            appendLetter.innerText = key;
-          } else {
-            appendLetter.innerText = "_";
-          }
+          appendLetter.innerText = key;
           currentWord.appendChild(appendLetter);
         }
 
@@ -386,7 +388,7 @@ function whenTextReady() {
 
         const lettersArray = currentWord.childNodes;
         lettersArray.forEach((e) => {
-          e.className = "";
+          e.className = "letter";
           e.classList.add("letter");
           e.innerText = e.dataset.letter;
         });

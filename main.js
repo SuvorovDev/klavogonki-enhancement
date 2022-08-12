@@ -14,6 +14,9 @@ function setAndRemoveSettings() {
   }
   typemod.parentNode.remove();
   highlight.parentNode.remove();
+
+  const inputsize = document.getElementById("param_inputsize");
+  inputsize.closest("tr").remove();
 }
 setAndRemoveSettings();
 
@@ -261,7 +264,7 @@ function keyPressListener() {
 
       const lettersArray = currentWord.childNodes;
       lettersArray.forEach((e) => {
-        e.className = "";
+        e.className = "letter";
         e.classList.add("letter");
         e.innerText = e.dataset.letter;
       });
