@@ -11,6 +11,28 @@ const defaultInput = document.getElementById("inputtext");
 defaultInput.setAttribute("maxlength", 30);
 defaultInput.focus();
 
+document.getElementById("param_keyboard").addEventListener("click", (e) => {
+  defaultInput.focus();
+});
+
+function setAndRemoveSettings() {
+  const typemod = document.getElementById("param_typemode");
+  const highlight = document.getElementById("param_highlight");
+  if (typemod.innerText !== "весь текст") {
+    typemod.click();
+  }
+  let i = 0;
+  while (i < 5) {
+    if (highlight.innerText === "символ") {
+      break;
+    }
+    highlight.click();
+    i += 1;
+  }
+  typemod.parentNode.remove();
+  highlight.parentNode.remove();
+}
+
 function getText() {
   const fieldOne = document.getElementById("beforefocus")?.innerText;
   const fieldTwo = document.getElementById("typefocus")?.innerText;
