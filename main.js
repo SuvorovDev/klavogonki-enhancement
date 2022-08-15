@@ -124,7 +124,7 @@ function generateTextNodes() {
     wordsBlock.innerHTML += formatWord(word);
   });
 
-  console.log(words);
+  // console.log(words);
   return wordsBlock;
 }
 
@@ -156,14 +156,12 @@ function focusError() {
     focusError.style.opacity = "0";
     caret.style.display = "block";
     words.style.filter = "blur(0)";
-    console.log("focus");
   });
   defaultInput.addEventListener("blur", (e) => {
     focusError.style.visibility = "visible";
     focusError.style.opacity = "1";
     caret.style.display = "none";
     words.style.filter = "blur(5px)";
-    console.log("blur");
   });
 
   return focusError;
@@ -210,7 +208,7 @@ function keyPressListener() {
     if (!isDone && !isDoneWrong) {
       const currentLetter = document.querySelector(".letter.current");
       const expectedLetter = currentLetter.dataset.letter;
-      console.log({ key, expectedLetter });
+      // console.log({ key, expectedLetter });
 
       if (isLetter) {
         if (key === expectedLetter) {
