@@ -300,6 +300,8 @@ function keyPressListener() {
       });
       lettersArray[0].classList.add("current");
 
+      defaultInput.value = "";
+
       currentWord.classList.remove("done", "doneWrong");
       caretMoving();
     }

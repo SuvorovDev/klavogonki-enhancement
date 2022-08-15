@@ -2,7 +2,7 @@
 // @name         klavogonki-enhancement
 // @version      0.0.3
 // @author       MishaaDev
-// @description  Replace defaul typinig box
+// @description  Replace default typing box on klavogonki.ru
 // @supportURL   https://github.com/MishaaDev/klavogonki-enhancement
 
 // @namespace    http://tampermonkey.net/
@@ -421,6 +421,8 @@ function whenTextReady() {
           e.innerText = e.dataset.letter;
         });
         lettersArray[0].classList.add("current");
+
+        defaultInput.value = "";
 
         currentWord.classList.remove("done", "doneWrong");
         caretMoving();
