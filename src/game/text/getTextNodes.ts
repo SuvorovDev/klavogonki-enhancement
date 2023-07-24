@@ -1,28 +1,31 @@
+import { _CE } from '@/helpers';
+
 export const generateTextNodes = (text: string) => {
     const words = text.split(/\s+/);
-    const wordsNodes = document.createElement('div');
+    const wordsNodes = _CE('div', { id: 'words' });
 
-    console.log(words);
-
-    wordsNodes.id = 'words';
     words.forEach((word) => {
         // generate letters span's
         const letters = word.split('');
         const letterNodes = letters.map((letter) => {
-            const node = document.createElement('span');
-            node.className = 'letter';
-            node.dataset.letter = letter;
-            node.innerText = letter;
-            return node;
+            return _CE('span', {
+                className: 'letter',
+                data: ['letter', letter],
+                text: letter
+            });
         });
 
         //generate words div's
-        const wordNode = document.createElement('div');
-        wordNode.className = 'word';
-        wordNode.append(...letterNodes);
+        const wordNode = _CE('div', {
+            className: 'word',
+            child: letterNodes
+        });
 
         wordsNodes.appendChild(wordNode);
     });
+
+    wordsNodes.querySelector('.word')!.classList.add('current');
+    wordsNodes.querySelector('.letter')!.classList.add('current');
 
     return wordsNodes;
 };
