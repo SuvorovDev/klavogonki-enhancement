@@ -1,6 +1,6 @@
-import { gameBox } from '../../static/defaultEl';
-import { _CE } from '../helpers/createElement';
-import getText from './getText';
+import { gameBox } from '@static/defaultEl';
+import { _CE } from '@/helpers';
+import getText from '@game/text/getText';
 
 const injectCustomRender = (): any => {
     const text = getText();

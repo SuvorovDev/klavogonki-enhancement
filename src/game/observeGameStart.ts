@@ -1,4 +1,4 @@
-import { textBox } from '../../static/defaultEl';
+import { textBox } from '@static/defaultEl';
 
 const observeGameStart = (someFunc: () => void) => {
     const observer = new MutationObserver(function (mutations) {

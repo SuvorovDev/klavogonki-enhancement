@@ -14,7 +14,13 @@
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "noImplicitReturns": true,
-        "skipLibCheck": true
+        "skipLibCheck": true,
+        "baseUrl": ".",
+        "paths": {
+            "@/*": ["src/*"],
+            "@static/*": ["static/*"],
+            "@game/*": ["src/game/*"]
+        }
     },
-    "include": ["src", "static/defaultEl.ts"]
+    "include": ["src", "static"]
 }
