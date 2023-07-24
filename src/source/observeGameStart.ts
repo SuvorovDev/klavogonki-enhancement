@@ -11,8 +11,6 @@ const observeGameStart = (someFunc: () => void) => {
     });
     if (textBox !== null) {
         observer.observe(textBox, { childList: true });
-    } else {
-        alert('Ошибка: observer запустился раньше загрузки элемента textBox!');
     }
 };
 

@@ -1,0 +1,37 @@
+* {
+    --second-text-color: #676c71;
+    --incorrect-text-color: #f95454;
+    --incorrect-overwrite-text-color: #911d1d;
+    --caret-color: #90ee90;
+}
+
+.word {
+    display: inline-block;
+    margin: 0 5px;
+    font-size: 25px;
+    user-select: none;
+    cursor: default;
+    color: var(--second-text-color);
+}
+
+.letter.correct {
+    color: var(--main-text-color);
+}
+
+.letter.incorrect {
+    color: var(--incorrect-text-color);
+}
+
+.letter.incorrectOverwrite {
+    color: var(--incorrect-overwrite-text-color);
+}
+
+#caret {
+    background: var(--caret-color);
+    width: 3px;
+    border-radius: 0.5rem !important;
+    height: 25px;
+    position: fixed;
+    animation: blink 0.5s infinite ease-in-out;
+    transition: left 0.1s ease-in-out;
+}
