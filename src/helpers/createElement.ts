@@ -13,7 +13,7 @@ export const _CE = (tagName: string, options: options): HTMLElement => {
 
     // if (options.html !== undefined) element.innerHTML = options.html;
 
-    if (options.text) element.innerText = options.text;
+    // if (options.text) element.innerText = options.text;
 
     if (options.children) element.appendChild(options.children);
 

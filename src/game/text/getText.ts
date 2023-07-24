@@ -1,7 +1,6 @@
 const fixStupidShit = (text: string) => {
-    const re = /[а-я]/;
-    if (re.test(text)) {
-        return text.replaceAll('o', 'о').replaceAll('c', 'с');
+    if (/[а-я]/.test(text)) {
+        text.replaceAll('o', 'о').replaceAll('c', 'с');
     }
     return text;
 };
