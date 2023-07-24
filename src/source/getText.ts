@@ -11,10 +11,11 @@ const getText = (): string => {
     const textFieldsId = ['beforefocus', 'typefocus', 'afterfocus'];
     textFieldsId.forEach((id) => {
         const textField = document.getElementById(id);
-        if (textField?.childElementCount === 0) {
+        if (textField?.childElementCount === 0 || textField?.children[0].tagName === 'BR') {
             text = text.concat(textField.innerText);
         } else {
-            const arr = [...(textField!.children as HTMLCollectionOf<HTMLElement>)];
+            const arr = Array.from(textField!.children as HTMLCollectionOf<HTMLElement>);
+
             arr.filter((e) => e.style.display !== 'none').forEach(
                 (e) => (text = text.concat(e.innerText))
             );
