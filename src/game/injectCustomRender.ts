@@ -1,7 +1,7 @@
 import { gameBox } from '@static/defaultEl';
 import { _CE } from '@/helpers';
 import getText from '@game/text/getText';
-import { generateTextNodes } from './text/getTextNodes';
+import createTextNodes from '@game/text/createTextNodes';
 
 const injectCustomRender = (): any => {
     const text = getText();
@@ -9,7 +9,7 @@ const injectCustomRender = (): any => {
 
     const typingBlock = _CE('div', {
         className: 'typing_block',
-        child: generateTextNodes(text)
+        child: createTextNodes(text)
     });
     gameBox!.appendChild(typingBlock);
 };

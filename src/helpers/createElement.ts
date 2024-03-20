@@ -7,24 +7,24 @@ interface options {
 }
 
 export const _CE = (tagName: string, options: options): HTMLElement => {
+    const { className, id, text, child, data } = options;
     const element = document.createElement(tagName);
 
-    if (options.className) element.className = options.className;
-    if (options.id) element.id = options.id;
+    if (className) element.className = className;
+    if (id) element.id = id;
+    if (text) element.innerText = text;
 
-    // if (options.html !== undefined) element.innerHTML = options.html;
-
-    if (options.text) element.innerText = options.text;
-
-    if (options.child) {
-        if (Array.isArray(options.child)) {
-            element.append(...options.child);
+    if (child) {
+        if (Array.isArray(child)) {
+            element.append(...child);
         } else {
-            element.appendChild(options.child);
+            element.appendChild(child);
         }
     }
 
-    if (options.data) element.dataset[options.data[0]] = options.data[1];
+    if (data) element.dataset[data[0]] = data[1];
+
+    // if (options.html !== undefined) element.innerHTML = options.html;
 
     // if (options.attributes) {
     //   for (const [key, value] of Object.entries(options.attributes)) {

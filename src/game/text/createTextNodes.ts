@@ -1,11 +1,11 @@
 import { _CE } from '@/helpers';
 
-export const generateTextNodes = (text: string) => {
+const createTextNodes = (text: string) => {
     const words = text.split(/\s+/);
     const wordsNodes = _CE('div', { id: 'words' });
 
     words.forEach((word) => {
-        // generate letters span's
+        // create letters span's
         const letters = word.split('');
         const letterNodes = letters.map((letter) => {
             return _CE('span', {
@@ -15,7 +15,7 @@ export const generateTextNodes = (text: string) => {
             });
         });
 
-        //generate words div's
+        // create words div's
         const wordNode = _CE('div', {
             className: 'word',
             child: letterNodes
@@ -29,3 +29,5 @@ export const generateTextNodes = (text: string) => {
 
     return wordsNodes;
 };
+
+export default createTextNodes;
